@@ -20,7 +20,7 @@ value:
 from nltk.stem import *
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
-import string, pickle , os, sys, json
+import string, pickle , os, sys, json, csv
 
 
 stemmer1 = SnowballStemmer("english", ignore_stopwords=True)
@@ -44,12 +44,14 @@ def stem_file(data_dir, data_filename, out_filename):
 	out_file = os.path.join( data_dir, out_filename+'_f') 
 	with open(out_path, 'wb')  as outfile:
 		outfile_f = open(out_file, 'w')
-		with  open(data_path, 'r') as infile:
-			for line_text in infile.readlines():
-				id = split_return(line_text, 0).strip('"')
-				q1 = split_return(line_text, 3)
-				q2 = split_return(line_text, 4)
-				is_duplicate_bit = split_return(line_text, 5).strip('"\n')
+		with  open(data_path, newline = '') as infile:
+			infilereader = csv.reader(infile)
+			next(infilereader, None)
+			for line_text in infilereader:
+				id = line_text[0]
+				q1 = line_text[3]
+				q2 = line_text[4]
+				is_duplicate_bit = line_text[5]
 				stemmed_q1 = stem_cleaned_text(q1)
 				stemmed_q2 = stem_cleaned_text(q2)
 				ret_dict[id] ={  'question1': stemmed_q1, 'question2':stemmed_q2, 'is_duplicate': is_duplicate_bit }
