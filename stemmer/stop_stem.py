@@ -21,7 +21,7 @@ from nltk.stem import *
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 import string, pickle , os, sys, json, csv
-
+import argparse
 
 stemmer1 = SnowballStemmer("english", ignore_stopwords=True)
 split_return = lambda line_text, index: (line_text.split(","))[index]
@@ -36,12 +36,13 @@ def stem_cleaned_text (text):
 	stemmed_words = map (lambda x: stemmer1.stem(x) , cleaned_text )
 	return list(stemmed_words)
 
-def stem_file(data_dir, data_filename, out_filename):
+def stem_file(data_dir, data_filename):
+	out_filename = data_filename + ".out"
 	#read infile, and pickle to outfile
 	ret_dict = {}
 	data_path = os.path.join( data_dir, data_filename)
 	out_path  =  os.path.join( data_dir, out_filename) 
-	out_file = os.path.join( data_dir, out_filename+'_f') 
+	out_file = os.path.join( data_dir, data_filename + ".out"+'_f') 
 	with open(out_path, 'wb')  as outfile:
 		outfile_f = open(out_file, 'w')
 		with  open(data_path, newline = '') as infile:
@@ -71,5 +72,10 @@ def get_par_dir():
 if __name__ == "__main__":
 	# text = "This is a sample sentence, showing off the stop words filtration filtr samples that."
 	pardir, datadir = get_par_dir()
-	stem_file(datadir , "test.csv", 'stem_out') #read from datadir/test.csv, write into datadir/stem_out
+	parser = argparse.ArgumentParser(description='process different input.')
+	parser.add_argument("-i",type=str, dest = "inputfile")
+	args = parser.parse_args()
+	
+
+	stem_file(datadir ,args.inputfile) #read from datadir/test.csv, write into datadir/stem_out
 
