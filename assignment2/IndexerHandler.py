@@ -12,7 +12,6 @@ import socket , json, nltk, pickle, os, sys
 import xml.etree.ElementTree as ET
 import numpy as np
 from assignment2.inventory import *
-from assignment2.parseXML import PageNode
 from itertools import groupby
 
 # inner_prod = lambda a,b: sum([aa*bb for aa,bb in (a,b)])
@@ -25,7 +24,7 @@ def createOneVector(dim, onehot, val):
         ret = [0]*dim
         ret[onehot] = val
         return ret
-  
+
 def sumvector(listvec):
         return sum([np.array(x) for x in listvec])
 '''def query_tf_vector(qarr, ret_q): #qarr is query original arr, ret_q is valid q for searching
@@ -34,7 +33,7 @@ def sumvector(listvec):
         for i in range(dim):
                 ret[i] += qarr.count(ret_q[i])
         return ret'''
-        
+
 class IndexerHandler(tornado.web.RequestHandler):
         idf_path = JOB_PATHS['idf']  #IDF is from idf_jobs/0.out
         for f in read_output(idf_path):
@@ -55,7 +54,7 @@ class IndexerHandler(tornado.web.RequestHandler):
                 ret_idf = []
                 group_qarr = groupby(sorted(qarr))
                 for q, tf_q in group_qarr:
-                        if IndexerHandler.IDF.get(q): 
+                        if IndexerHandler.IDF.get(q):
                                 ret_q.append(q)
                                 ret_tf.append(  len(list(tf_q)) )
                                 ret_idf.append(IndexerHandler.IDF[q] )
@@ -68,16 +67,16 @@ class IndexerHandler(tornado.web.RequestHandler):
                 qs = self.get_argument("q")  # /index?q=query_here
                 qs = qs.lower()
                 qarr = qs.split(" ")
-                
-                qarr = [q.strip() for q in qarr]
-                
-                (ret_q,q_tfs,idfs) = IndexerHandler.getQueryIDF(qarr) #determine dimension of ret_q, maximum 
 
-                if len(ret_q) == 0: 
+                qarr = [q.strip() for q in qarr]
+
+                (ret_q,q_tfs,idfs) = IndexerHandler.getQueryIDF(qarr) #determine dimension of ret_q, maximum
+
+                if len(ret_q) == 0:
                         resp = json.dumps({"postings": []})
                 else:
 
-                        # idf = IndexerHandler.IDF[q]   # when word's q_df close to page_num, its socre is 0                 
+                        # idf = IndexerHandler.IDF[q]   # when word's q_df close to page_num, its socre is 0
                         # check each partition of invindex
                         dim = len(ret_q) #[1,1,1,1] every word is one in vector
                         tfs = {} # every doc_id has a list of vector
@@ -99,13 +98,13 @@ class IndexerHandler(tornado.web.RequestHandler):
                         print("query vector", ret_q)
                         print("query tf vector", q_tfs)
                         print("query idf words", idfs)
-                        
+
                         for docID in final_tf:
                                 doc_tfidf_vector[docID] =  idfs_arr* np.array(final_tf[docID])
                                 score[docID] = np.dot(doc_tfidf_vector[docID], query_tfidf_vector)
                                 # print("docID: ",docID,"doc_tfidf: ",doc_tfidf_vector[docID], "score: ", score[docID] )
                                 resp.append([docID, score[docID]])
-                        
+
                         sorted_resp = sorted(resp, key=lambda tp: tp[1],  reverse = True)
                         resp = json.dumps({"postings": sorted_resp},sort_keys=True)
 
@@ -117,7 +116,7 @@ if __name__ == "__main__":
         #depend nodelist in PageNode
         apps = {}
         for index_port in INDEX_PORTS:
-                url = BASE_ADDR  % index_port 
+                url = BASE_ADDR  % index_port
                 print("Indexer%d url: %s" %(IndexerHandler.INDEXER_ID, url))
                 IndexerHandler.INDEXER_ID+=1
                 apps[index_port] = tornado.web.Application(handlers=[(r"/index", IndexerHandler, dict(port = index_port))],debug = True)

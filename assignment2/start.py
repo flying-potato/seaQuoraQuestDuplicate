@@ -13,14 +13,13 @@ from assignment2.inventory import *
 from assignment2.IndexerHandler import IndexerHandler
 from assignment2.DocHandler import DocHandler
 from assignment2.Frontend import ForwardHandler
-from assignment2.parseXML import PageNode
 resps = {}
 postings = []
 apps = {}
 
 if __name__ == "__main__":
 	for index_port in INDEX_PORTS:
-		url = BASE_ADDR  % index_port 
+		url = BASE_ADDR  % index_port
 		print("Indexer%d url: %s" %(IndexerHandler.INDEXER_ID, url))
 		print("Doc Handler%d url: %s" %(DocHandler.DOCSERVER_ID, url))
 		IndexerHandler.INDEXER_ID+=1

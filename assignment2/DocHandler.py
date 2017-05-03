@@ -11,7 +11,6 @@ import json, hashlib, pickle, sys, os
 
 from assignment2.IndexerHandler import IndexerHandler
 from assignment2.inventory import *
-from assignment2.parseXML import PageNode
 
 
 
@@ -30,8 +29,8 @@ class DocHandler(tornado.web.RequestHandler):
 	def createSnippet(q, text):
 		index_q = text.casefold().find(q.casefold())
 		len_q = len(q)
-		start = max(0, index_q - 100)	
-		end = min(len(text)-1, index_q+100)	
+		start = max(0, index_q - 100)
+		end = min(len(text)-1, index_q+100)
 		ret = text[start:end]
 		q_in_text = text[index_q:index_q+len_q]
 		ret = ret.replace( q_in_text, "<strong>" + q_in_text + "</strong>")
@@ -43,7 +42,7 @@ class DocHandler(tornado.web.RequestHandler):
 		score = self.get_argument("score")
 
 		partition_idx = PARTITIONER(id, NUM_DOC_PART)
-		if INDEX_PORTS[partition_idx] == self.port:	
+		if INDEX_PORTS[partition_idx] == self.port:
 			result = {}
 			result["id"] = id
 			result["question1"] = self.doc_dict[id][0] #question1
