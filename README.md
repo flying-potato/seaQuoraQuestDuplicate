@@ -23,26 +23,38 @@ Regression output will tell if two questions are duplicate
 
 #2017.05.02
 
-usage:
+#Model trainning and testing, to get search engine's corpse:
+
+python3 -m general_stemmer.stop_stem
+
+python3 -m general_word2vec_train.word2vec_train
+
+python3 -m stemmer.stemmer_select --size1=100000 --size2=20000
+
+python3 -m word2vec.sentence2vec_idf
+
+python3 -m word2vec.stence2vec_noidf
+
+python3 -m word2vec.generate_final_train
+
+python3 -m classifier.kneighbors
+
+python3 -m classifier.predict
+
+#web search engine usage:
 
 1. create input files
-
 ./assignment4/reformat_all.sh
 
 2. start mapreduce framework
-
 python -m assignment3.workers
 
 3. submit indexing tasks to mapreduce framework
-
 python -m assignment4.start
-
 4. start search engine backend
 
 python -m assignment2.start 
-
 5. start search engine frontend
-
 python -m webapp.start
 
 
